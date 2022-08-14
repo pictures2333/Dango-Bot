@@ -1,3 +1,5 @@
+import json
+from turtle import textinput
 def loadset(ggid):
         if ggid == 0:
             with open('settings.json', 'r', encoding = 'utf-8') as f:
@@ -23,12 +25,19 @@ def loadlang(pack:str):
         d1 = json.load(f)
     return d1
 
+with open('settings.json', 'r', encoding = 'utf-8') as f:
+    botsetting = json.load(f)
+
 from collections import Counter
-import discord, requests, json, random, os, glob, asyncio, urllib, re, ooxx
-from discord.ext import commands
+import youtube_dl, shutil
+import discord, requests, random, os, glob, asyncio, urllib, re, ooxx
+from discord.ext import commands, tasks
 from discord.ui import Button, View, Select
 from datetime import datetime, timezone, timedelta
 from time import sleep
+from youtube_dl import YoutubeDL
+from discord import FFmpegPCMAudio
+from discord.utils import get
 import gettime
 
 timezonenames = {-12:"國際換日線",
@@ -84,16 +93,16 @@ price = {
     "蟒蛇肉":10,
 }
 
-api_key = '<API Key of your YouTube Data API>'
+api_key = botsetting['googleapi']
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix = '>>', intents = intents, help_command=None)
+bot = commands.Bot(command_prefix = botsetting['prefix'], intents = intents, help_command=None)
 @bot.event
 async def on_ready():
     print('[main1]Bot is ready and online')
     print('[main1]>>Bot is ONLINE<<')
     await asyncio.sleep(1)
     
-    thechannel = bot.get_channel(<id of the channel you want to push message>)
+    thechannel = bot.get_channel(botsetting['restartlog'])
     botguilds = bot.guilds
     gettime.gettime(8, '%Y/%m/%d %H:%M:%S')
     with open('time.txt', 'r', encoding = 'utf-8') as f:
@@ -103,11 +112,12 @@ async def on_ready():
     embed.add_field(name="伺服器重啟時間", value=f"Asia/Taipei UTC/GMT+8 {zoned_time1}", inline=False)
     embed.add_field(name="伺服器載入分流數量", value="3", inline=False)
     embed.add_field(name="使用團子機器人的伺服器數量", value=f"{str(len(botguilds))}", inline=False)
-    embed.set_footer(text="愛吃團子的機器人|v1.6.1")
+    embed.set_footer(text=f'愛吃團子的機器人|{botsetting["version"]}')
     await thechannel.send(embed=embed)
 
-    game = discord.Game('>>help|v1.6.1')
-    await bot.change_presence(status=discord.Status.online, activity=game)
+    while True:
+        game = discord.Game(f'>>help|{botsetting["version"]}')
+        await bot.change_presence(status=discord.Status.online, activity=game)
 
 @bot.event
 async def on_guild_join(guild):
@@ -464,12 +474,12 @@ async def help(ctx):
     embed.add_field(name="[廣告投放欄位]", value="""``歡迎私訊申請投放廣告``""", inline=False)
 
     embed.add_field(name="機器人作者", value='pour33142GX', inline=True)
-    embed.add_field(name="機器人版本", value='v1.6.1', inline=True)
+    embed.add_field(name="機器人版本", value=botsetting["version"], inline=True)
     embed.add_field(name="圖片庫版本", value='v1.5', inline=True)
     embed.add_field(name="程式語言", value='Python 3.10', inline=True)
     embed.add_field(name="模組", value='Discord.py、Pycord、urllib、requests、asyncio、os、random、datetime、glob、json、re、time、collections', inline=True)
-    embed.add_field(name="Special Thanks", value='白上主子主推 今天是主子asmr的一天#6226(onion88didi)、【偽聲見習生】呆那#5825、Himeno_hina、鈴木ロータス🍡腦殘vtuber#9700', inline=True)
-    embed.set_footer(text='愛吃團子的機器人|v1.6.1')
+    embed.add_field(name="Special Thanks", value='白上主子主推(onion88didi)、【偽聲見習生】呆那、Himeno_hina、鈴木ロータス🍡腦殘vtuber(已安息、墳墓還被基岩壓著)', inline=True)
+    embed.set_footer(text=f'愛吃團子的機器人|{botsetting["version"]}')
     
     select = Select(placeholder="Choose a page!",
         options=[
@@ -482,6 +492,7 @@ async def help(ctx):
         discord.SelectOption(label="Page7", emoji = "😘", description='Role'),
         discord.SelectOption(label="Page8", emoji = "👋", description='Welcome and Leave'),
         discord.SelectOption(label="Page9", emoji = "🎮", description='Game and Gamer'),
+        discord.SelectOption(label="Page10", emoji = "🎵", description='音樂')
     ])
     async def testcallback(interaction):
         if select.values[0] == 'Page1':
@@ -507,6 +518,7 @@ async def help(ctx):
             await interaction.response.edit_message(embed=embed)
         elif select.values[0] == 'Page3':
             embed=discord.Embed(title=langpack['clist.page3.title.title'], description=langpack['clist.page3.title.msg'], color=0xec3cbd)
+            embed.add_field(name=">>exam", value="查看112年國中教育會考倒數計時", inline=False)
             embed.add_field(name=">>help", value=langpack['clist.page3.command1'], inline=False)
             embed.add_field(name=">>ping", value=langpack['clist.page3.command2'], inline=False)
             embed.add_field(name=">>time", value=langpack['clist.page3.command3'], inline=False)
@@ -594,12 +606,27 @@ async def help(ctx):
             embed.add_field(name=">>ooxx leave", value="強制結束一場井字遊戲", inline=False)
             embed.add_field(name=">>ooxx view", value="叫出遊戲面板", inline=False)
             await interaction.response.edit_message(embed=embed)
+        elif select.values[0] == 'Page10':
+            embed=discord.Embed(title='指令列表-page10', description='音樂', color=0xec3cbd)
+            embed.add_field(name=">>join", value='加入語音頻道', inline=False)
+            embed.add_field(name=">>vleave", value='離開語音頻道', inline=False)
+            embed.add_field(name=">>play <url>", value="播放一個歌曲/把一個歌曲加到列表\n<url> - 填入Youtube影片網址", inline=False)
+            embed.add_field(name=">>pause", value="暫停音樂", inline=False)
+            embed.add_field(name=">>resume", value="繼續播放音樂", inline=False)
+            embed.add_field(name=">>loop <mode>", value="切換音樂循環模式\n<mode> - 可填入``n``、``o``、``a``\nn - 關閉 | o - 單曲循環 | a - 播放清單循環", inline=False)
+            embed.add_field(name=">>queue", value="查看播放清單", inline=False)
+            embed.add_field(name=">>clearqueue", value="清除播放清單", inline=False)
+            embed.add_field(name=">>prandom", value="切換隨機播放", inline=False)
+            embed.add_field(name=">>stop", value="停止播放音樂", inline=False)
+            embed.add_field(name=">>skip", value="跳過現在播放的音樂", inline=False)
+            await interaction.response.edit_message(embed=embed)
     select.callback = testcallback
     view = View(timeout = None)
     view.add_item(select)
 
     view.add_item(Button(label = '官方discord', style = discord.ButtonStyle.url, url = 'https://discord.gg/EEphsxzvvQ'))
     view.add_item(Button(label = '邀請團子機器人', style = discord.ButtonStyle.url, url = 'https://discord.com/api/oauth2/authorize?client_id=891282885007532062&permissions=8&scope=bot'))
+    view.add_item(Button(label = '機器人程式碼', style = discord.ButtonStyle.url, url = 'https://github.com/pictures2333/Dango-Bot'))
 
     await ctx.send(embed=embed, view = view)
 
@@ -1135,37 +1162,34 @@ async def picture(ctx, type:str):
         await ctx.send(embed=embed)
 @bot.command()
 async def picgoogle(ctx, *, msg):
-    #try:
-        global imageList
-        def getHtmlCode(url):
-            headers = {
-              'User-Agent': 'Mozilla/5.0(Linux; Android 6.0; Nexus 5 Build/MRA58N) \
-              AppleWebKit/537.36(KHTML,like Gecko) Chrome/56.0.2924.87 Mobile Safari/537.36'
-            }
-            url = urllib.request.Request(url,headers=headers)
-            page = urllib.request.urlopen(url).read()
-            page = page.decode('UTF-8')
-            return page
-        def getImage(page):
-            global imageList
-            imageList = re.findall(r'(https:[^\s]*?(jpg|png|gif))"',page)
-            x = 0
-            while not x>1 :
-              try:
-                x = x + 1
-              except:
-                continue
-            pass
-        encodedStr = f'https://{msg}.com'
-        url = urllib.parse.quote(encodedStr).replace('https://', '').replace('.com', '')
-        page = getHtmlCode(f'https://www.google.com/search?q={url}&tbm=isch')
-        turl = str(imageList[random.randint(0, len(imageList)-1)][0])
-        await ctx.send(f'''{msg}
-{turl}''')
-        #except:
-        #    embed=discord.Embed(color=0xee4f9e)
-        #    embed.add_field(name="錯誤!", value=f"執行指令時發生錯誤!", inline=True)
-        #    await ctx.send(embed=embed)
+    global imageList
+    def getHtmlCode(url):
+      headers = {
+        'User-Agent': 'Mozilla/5.0(Linux; Android 6.0; Nexus 5 Build/MRA58N) \
+        AppleWebKit/537.36(KHTML,like Gecko) Chrome/56.0.2924.87 Mobile Safari/537.36'
+      }
+      url = urllib.request.Request(url,headers=headers)
+      page = urllib.request.urlopen(url).read()
+      page = page.decode('UTF-8')
+      return page
+    def getImage(page):
+       global imageList
+       imageList = re.findall(r'(https:[^\s]*?(jpg|png|gif))"',page)
+       x = 0
+       while not x>1 :
+         try:
+           print(imageList)
+           x = x + 1
+         except:
+           continue
+       pass
+    if __name__ == '__main__':
+       encodedStr = f'https://{msg}.com'
+       url = urllib.parse.quote(encodedStr).replace('https://', '').replace('.com', '')
+       page = getHtmlCode(f'https://www.google.com/search?q={url}&tbm=isch')
+       turl = str(imageList[random.randint(0, len(imageList)-1)][0])
+       print(turl)
+       await ctx.send(f"{msg}\n{turl}")
 
 @bot.command()
 async def purge(ctx, num:int):
@@ -3229,7 +3253,7 @@ async def admin(ctx):
     await ctx.message.delete()
 @admin.command()
 async def sudo(ctx, guild:int, command):
-    if ctx.author.id == <author user id>:
+    if ctx.author.id == bot.owner_id:
         if command == 'resetup':
             tguild = bot.get_guild(guild)
             gid = tguild.id
@@ -3263,7 +3287,7 @@ async def sudo(ctx, guild:int, command):
                         await user.dm_channel.send(embed=embed)
 @admin.command()
 async def guilds(ctx):
-    if ctx.author.id == <author user id>:
+    if ctx.author.id == bot.owner_id:
         guilds = bot.guilds
         msg = "使用團子機器人的伺服器\n"
         n = 1
@@ -3284,7 +3308,7 @@ async def guilds(ctx):
                 await user.dm_channel.send(m)
 @admin.command()
 async def ginfo(ctx, id:int):
-    if ctx.author.id == <author user id>:
+    if ctx.author.id == bot.owner_id:
         gid = ctx.guild.id
         lan_set = loadset(gid)
         langpack = loadlang(lan_set["lang"])
@@ -3818,31 +3842,631 @@ async def view(ctx):
         embed.add_field(name="錯誤", value=f"你並沒有在一個遊戲中!", inline=True)
         await ctx.send(embed = embed)
 
-#@bot.group()
-#async def safe(ctx):
-#    pass
-#@safe.command()
-#async def backup(ctx):
-#    au = ctx.author
-#    roles = au.roles
-#    isa = 0
-#    for a in roles:
-#        for c in a.permissions:
-#            if c[0] == 'administrator' and c[1] == True:
-#                isa = 1
-#    if isa == 1:
-#        embed=discord.Embed(title="伺服器備份系統",color=0xee4f9e)
-#        embed.add_field(name="進度:初始化中...", value=f"－－－－－－－－－－－－－－－－－－－－", inline=True)
-#        await ctx.send(embed=embed)
-#
-#        if not(os.path.exists(f'backups/{str(ctx.guild.id)}') and os.path.isdir(f'backups/{str(ctx.guild.id)}')):
-#            os.mkdir(f'backups/{str(ctx.guild.id)}')
-#        
-#        guilddata = {}
-#    else:
-#        embed=discord.Embed(color=0xee4f9e)
-#        embed.add_field(name="設定檔遺失!", value=f"請使用>>resetup建立設定檔", inline=True)
-#        await ctx.send(embed=embed)
+#播放直播
+#播放播放清單的
+@bot.command()
+async def join(ctx):
+    if ctx.author.voice != None:
+        allow  = True
+        for vc in bot.voice_clients:
+            print(vc)
+            if vc.guild.id == ctx.guild.id:
+                allow = False
+                break
+        if allow == True:
+            tdd1 = {"queue":[], "loop":False, "playing":0, 'stopped':False, 'skipmsg':'', 'cantplay':'', "loop":"關閉", "random": False}
+            dumpdata = json.dumps(tdd1, ensure_ascii = False)
+            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                f.write(dumpdata)
+            
+            channel = ctx.author.voice.channel
+            await channel.connect()
+            embed=discord.Embed(color=0xee4f9e)
+            embed.add_field(name="成功", value=f"已加入語音頻道!", inline=True)
+            await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"我已經在語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"請先加入一個語音頻道!", inline=True)
+        await ctx.send(embed = embed)
+
+@bot.command()
+async def play(ctx, url):
+    with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+        d1 = json.load(f)
+    if d1['cantplay'] == "":
+        allow  = False
+        for vc in bot.voice_clients:
+            if vc.guild.id == ctx.guild.id:
+                ttvc = vc
+                allow = True
+        if allow == True:
+            if ctx.author.voice != None:
+                if ctx.author.voice.channel.id == ttvc.channel.id:
+                    rms = re.findall(r'[watch?v=]*[\w-]*', url)
+                    for rm in rms:
+                        if "watch?v=" in rm:
+                            watch = rm.replace("watch?v=", "")
+                            break
+                    result3 = requests.get('https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id={}&key={}'.format(watch, api_key))
+                    data3 = result3.json()
+                    vtitle = str(data3["items"][0]["snippet"]["title"])
+                    voice = get(bot.voice_clients, guild=ctx.guild)
+                    if not voice.is_playing() and voice.is_paused() == False:
+                        with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                            d1 = json.load(f)
+                        if d1['playing'] != 0:
+                            d1['playing'] += 1
+                        d1['queue'].append((url, vtitle, data3["items"][0]["snippet"]["channelTitle"], data3["items"][0]["snippet"]["thumbnails"]['default']['url']))
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+                        YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                        FFMPEG_OPTIONS = {
+                            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                        with YoutubeDL(YDL_OPTIONS) as ydl:
+                            info = ydl.extract_info(url, download=False)
+                        URL = info['url']
+                        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+
+                        embed=discord.Embed(color=0xee4f9e)
+                        embed.add_field(name="開始播放!", value=f'**{data3["items"][0]["snippet"]["channelTitle"]}**\n{vtitle}', inline=True)
+                        embed.set_image(url = data3["items"][0]["snippet"]["thumbnails"]['default']['url'])
+                        await ctx.send(embed = embed)
+
+                        with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                            d1 = json.load(f)
+                        running = True
+                        while running:
+                            yskip = False
+                            with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                                d1 = json.load(f)
+                            if d1['skipmsg'] == "True":
+                                yskip = True
+                                voice.stop()
+                                d1['skipmsg'] = ''
+                                dumpdata = json.dumps(d1, ensure_ascii = False)
+                                with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                    f.write(dumpdata)
+                            if voice.is_playing() == False and voice.is_paused() == False and d1['stopped'] == False:
+                                if d1['random'] == False:
+                                    if not(d1['playing']+1 > len(d1['queue'])-1):
+                                        d1['cantplay'] = "True"
+                                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                            f.write(dumpdata)
+                                        await asyncio.sleep(5)
+                                        d1['cantplay'] = ""
+                                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                            f.write(dumpdata)
+                                        if d1['loop'] == "單首" and yskip == False:
+                                            pass
+                                        else:
+                                            d1['playing'] += 1
+                                        YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                                        FFMPEG_OPTIONS = {
+                                            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                                        with YoutubeDL(YDL_OPTIONS) as ydl:
+                                            info = ydl.extract_info(d1['queue'][d1['playing']][0], download=False)
+                                        URL = info['url']
+                                        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                            f.write(dumpdata)
+                                        embed=discord.Embed(color=0xee4f9e)
+                                        embed.add_field(name="開始播放!", value=f"**{d1['queue'][d1['playing']][2]}**\n{d1['queue'][d1['playing']][1]}", inline=True)
+                                        embed.set_image(url = d1['queue'][d1['playing']][3])
+                                        await ctx.send(embed = embed)
+                                    else:
+                                        if d1['loop'] == "關閉":
+                                            running = False
+                                        elif d1['loop'] == "全部":
+                                            d1['playing'] = 0
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+
+                                            d1['cantplay'] = "True"
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            await asyncio.sleep(5)
+                                            d1['cantplay'] = ""
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+
+                                            YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                                            FFMPEG_OPTIONS = {
+                                                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                                            with YoutubeDL(YDL_OPTIONS) as ydl:
+                                                info = ydl.extract_info(d1['queue'][d1['playing']][0], download=False)
+                                            URL = info['url']
+                                            voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            embed=discord.Embed(color=0xee4f9e)
+                                            embed.add_field(name="開始播放!", value=f"**{d1['queue'][d1['playing']][2]}**\n{d1['queue'][d1['playing']][1]}", inline=True)
+                                            embed.set_image(url = d1['queue'][d1['playing']][3])
+                                            await ctx.send(embed = embed)
+                                        elif d1['loop'] == "單首" and yskip == False:
+                                            d1['cantplay'] = "True"
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            await asyncio.sleep(5)
+                                            d1['cantplay'] = ""
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+
+                                            YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                                            FFMPEG_OPTIONS = {
+                                                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                                            with YoutubeDL(YDL_OPTIONS) as ydl:
+                                                info = ydl.extract_info(d1['queue'][d1['playing']][0], download=False)
+                                            URL = info['url']
+                                            voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            embed=discord.Embed(color=0xee4f9e)
+                                            embed.add_field(name="開始播放!", value=f"**{d1['queue'][d1['playing']][2]}**\n{d1['queue'][d1['playing']][1]}", inline=True)
+                                            embed.set_image(url = d1['queue'][d1['playing']][3])
+                                            await ctx.send(embed = embed)
+                                        elif d1['loop'] == "單首":
+                                            d1['cantplay'] = "True"
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            await asyncio.sleep(5)
+                                            d1['cantplay'] = ""
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+
+                                            YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                                            FFMPEG_OPTIONS = {
+                                                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                                            with YoutubeDL(YDL_OPTIONS) as ydl:
+                                                info = ydl.extract_info(d1['queue'][d1['playing']][0], download=False)
+                                            URL = info['url']
+                                            voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                                            dumpdata = json.dumps(d1, ensure_ascii = False)
+                                            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                                f.write(dumpdata)
+                                            embed=discord.Embed(color=0xee4f9e)
+                                            embed.add_field(name="開始播放!", value=f"**{d1['queue'][d1['playing']][2]}**\n{d1['queue'][d1['playing']][1]}", inline=True)
+                                            embed.set_image(url = d1['queue'][d1['playing']][3])
+                                            await ctx.send(embed = embed)
+                                else:
+                                    d1['cantplay'] = "True"
+                                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                        f.write(dumpdata)
+                                    await asyncio.sleep(5)
+                                    d1['cantplay'] = ""
+                                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                        f.write(dumpdata)
+                                    
+                                    d1['playing'] = random.randint(0, len(d1['queue'])-1)
+                                    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+                                    FFMPEG_OPTIONS = {
+                                        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                                    with YoutubeDL(YDL_OPTIONS) as ydl:
+                                        info = ydl.extract_info(d1['queue'][d1['playing']][0], download=False)
+                                    URL = info['url']
+                                    voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                                        f.write(dumpdata)
+                                    embed=discord.Embed(color=0xee4f9e)
+                                    embed.add_field(name="開始播放!", value=f"**{d1['queue'][d1['playing']][2]}**\n{d1['queue'][d1['playing']][1]}", inline=True)
+                                    embed.set_image(url = d1['queue'][d1['playing']][3])
+                                    await ctx.send(embed = embed)
+                            await asyncio.sleep(1)
+                    else:
+                        with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                            d1 = json.load(f)
+                        d1['queue'].append((url, vtitle, data3["items"][0]["snippet"]["channelTitle"], data3["items"][0]["snippet"]["thumbnails"]['default']['url']))
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+
+                        embed=discord.Embed(color=0xee4f9e)
+                        embed.add_field(name="已加入播放清單!", value=f'**{data3["items"][0]["snippet"]["channelTitle"]}**\n{vtitle}', inline=True)
+                        embed.set_image(url = data3["items"][0]["snippet"]["thumbnails"]['default']['url'])
+                        await ctx.send(embed = embed)
+                else:
+                    embed=discord.Embed(color=0xff0000)
+                    embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                    await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+@bot.command()
+async def prandom(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                    d1 = json.load(f)
+                mmsg = ""
+                if d1['random'] == True:
+                    d1['random'] = False
+                    mmsg = "關閉"
+                else:
+                    d1['random'] = True
+                    mmsg = "開啟"
+                dumpdata = json.dumps(d1, ensure_ascii = False)
+                with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                    f.write(dumpdata)
+                embed=discord.Embed(color=0xee4f9e)
+                embed.add_field(name="隨機播放", value=f"``{mmsg}``", inline=True)
+                await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+@bot.command()
+async def loop(ctx, sta:str):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                    d1 = json.load(f)
+                cando = True
+                if sta == "n":
+                    d1['loop'] = "關閉"
+                elif sta == "a":
+                    d1['loop'] = "全部"
+                elif sta == "o":
+                    d1['loop'] = "單首"
+                else:
+                    cando = False
+                dumpdata = json.dumps(d1, ensure_ascii = False)
+                with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                    f.write(dumpdata)
+                if cando == True:
+                    embed=discord.Embed(color=0xee4f9e)
+                    embed.add_field(name="已將音樂循環設定為", value=d1['loop'], inline=True)
+                    await ctx.send(embed = embed)
+                else:
+                    embed=discord.Embed(color=0xee4f9e)
+                    embed.add_field(name="錯誤!", value='參數錯誤!', inline=True)
+                    await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+@bot.command()
+async def queue(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                    d1 = json.load(f)
+                msg = ""
+                for i, d in enumerate(d1['queue']):
+                    if i == d1['playing']:
+                        msg += f"[*]{d[1]} - {d[2]}\n"
+                    elif i != d1['playing']:
+                        msg += f"[{str(i+1)}]{d[1]} - {d[2]}\n"
+                if msg == "":
+                    msg = "清單內沒有歌曲!"
+                embed=discord.Embed(color=0xee4f9e)
+                embed.add_field(name="播放清單", value=f"{msg}", inline=True)
+                await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+@bot.command()
+async def skip(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                voice = get(bot.voice_clients, guild=ctx.guild)
+                with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                    d1 = json.load(f)
+                voice.stop()
+                if d1['loop'] != "全部" and (len(d1['queue'])-1) < (d1['playing']+1):
+                    if d1['loop'] == "關閉":
+                        embed=discord.Embed(color=0xee4f9e)
+                        embed.add_field(name="播放清單已到盡頭", value=f"已停止音樂", inline=True)
+                        await ctx.send(embed = embed)
+                    else:
+                        d1['loop'] = "關閉"
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+                        embed=discord.Embed(color=0xee4f9e)
+                        embed.add_field(name="播放清單已到盡頭", value=f"已停止音樂", inline=True)
+                        await ctx.send(embed = embed)
+                        await asyncio.sleep(2)
+                        d1['loop'] = "單首"
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+                else:
+                    d1['skipmsg'] = 'True'
+                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                        f.write(dumpdata)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+@bot.command()
+async def resume(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                voice = get(bot.voice_clients, guild=ctx.guild)
+                if voice.is_paused():
+                    voice.resume()
+    
+                    embed=discord.Embed(color=0xee4f9e)
+                    embed.add_field(name="成功!", value=f"繼續播放", inline=True)
+                    await ctx.send(embed = embed)
+                else:
+                    embed=discord.Embed(color=0xff0000)
+                    embed.add_field(name="錯誤!", value=f"音樂已在播放", inline=True)
+                    await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+@bot.command()
+async def clearqueue(ctx):
+    with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+        d1 = json.load(f)
+    tdd1 = {"queue":[d1['queue'][d1['playing']]], "loop":d1['loop'], "playing":0, 'stopped':False, 'skipmsg':d1['skipmsg'], 'cantplay':d1['cantplay'], 'loop':d1['loop'], "random": d1['random']}
+    dumpdata = json.dumps(tdd1, ensure_ascii = False)
+    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+        f.write(dumpdata)
+    embed=discord.Embed(color=0xee4f9e)
+    embed.add_field(name="成功!", value=f"清除播放清單", inline=True)
+    await ctx.send(embed = embed)
+@bot.command()
+async def pause(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                voice = get(bot.voice_clients, guild=ctx.guild)
+                if voice.is_playing():
+                    voice.pause()
+                    embed=discord.Embed(color=0xee4f9e)
+                    embed.add_field(name="成功!", value=f"音樂已暫停", inline=True)
+                    await ctx.send(embed = embed)
+                else:
+                    embed=discord.Embed(color=0xff0000)
+                    embed.add_field(name="錯誤!", value=f"音樂已經暫停/停止!", inline=True)
+                    await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+
+@bot.command()
+async def stop(ctx):
+    allow = False
+    for vc in bot.voice_clients:
+        if vc.guild.id == ctx.guild.id:
+            ttvc = vc
+            allow = True
+    if allow == True:
+        if ctx.author.voice != None:
+            if ctx.author.voice.channel.id == ttvc.channel.id:
+                voice = get(bot.voice_clients, guild=ctx.guild)
+                if voice.is_playing():
+                    with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                        d1 = json.load(f)
+                    dan = False
+                    if d1['loop'] == "單首":
+                        dan = True
+                        d1['loop'] = "關閉"
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+                    dan2 = False
+                    if d1['random'] == True:
+                        dan2 = True
+                        d1['random'] = False
+                        dumpdata = json.dumps(d1, ensure_ascii = False)
+                        with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                            f.write(dumpdata)
+                    voice.stop()
+                    embed=discord.Embed(color=0xee4f9e)
+                    embed.add_field(name="成功!", value=f"音樂已停止", inline=True)
+                    await ctx.send(embed = embed)
+                    with open(f'music/{str(ctx.guild.id)}.json', 'r', encoding = 'utf-8') as f:
+                        d1 = json.load(f)
+                    d1['stopped'] = True
+                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                        f.write(dumpdata)
+                    await asyncio.sleep(2)
+                    if dan == True:
+                        d1['loop'] = "單首"
+                    if dan2 == True:
+                        d1['random'] = True
+                    dumpdata = json.dumps(d1, ensure_ascii = False)
+                    with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                        f.write(dumpdata)
+                else:
+                    embed=discord.Embed(color=0xff0000)
+                    embed.add_field(name="錯誤!", value=f"音樂已經暫停/停止!", inline=True)
+                    await ctx.send(embed = embed)
+            else:
+                embed=discord.Embed(color=0xff0000)
+                embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+                await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"你跟機器人並不在同一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"我並沒有在一個語音頻道內!", inline=True)
+        await ctx.send(embed = embed)
+
+@bot.command()
+async def vleave(ctx):
+    if ctx.author.voice != None:
+        allow  = False
+        for vc in bot.voice_clients:
+            print(vc)
+            if vc.guild.id == ctx.guild.id:
+                allow = True
+                break
+        if allow == True:
+            voice = get(bot.voice_clients, guild=ctx.guild)
+            await voice.disconnect()
+            tdd1 = {"queue":[], "loop":False, "playing":0, 'stopped':False, 'skipmsg':'', 'cantplay':'', "loop":"關閉", "random": False}
+            dumpdata = json.dumps(tdd1, ensure_ascii = False)
+            with open(f'music/{str(ctx.guild.id)}.json', 'w', encoding = 'utf-8') as f:
+                f.write(dumpdata)
+
+            embed=discord.Embed(color=0xee4f9e)
+            embed.add_field(name="成功", value=f"已離開語音頻道!", inline=True)
+            await ctx.send(embed = embed)
+        else:
+            embed=discord.Embed(color=0xff0000)
+            embed.add_field(name="錯誤", value=f"我並不在一個語音頻道內!", inline=True)
+            await ctx.send(embed = embed)
+    else:
+        embed=discord.Embed(color=0xff0000)
+        embed.add_field(name="錯誤", value=f"請先加入一個語音頻道!", inline=True)
+        await ctx.send(embed = embed)
+
+@bot.command()
+async def exam(ctx):
+    async def refresh(interaction):
+        langpack = loadlang('zh-tw.json')
+        try:
+            gettime.gettime(+8, '%Y/%m/%d %H:%M:%S')
+            with open('time.txt', 'r', encoding = 'utf-8') as f:
+                content1 = f.readlines()
+                zoned_time1 = content1[0]
+            time_1 = datetime.strptime(zoned_time1,"%Y/%m/%d %H:%M:%S")
+            time_2 = datetime.strptime('2023/05/20 00:00:00',"%Y/%m/%d %H:%M:%S")
+
+            time_interval = time_2 - time_1
+            
+            embed=discord.Embed(color=0xee4f9e)
+            embed.add_field(name="112年國中教育會考倒數", value=f"**{str(time_interval)}**\n``112年國中教育會考將在:112年5月20、21日舉辦``\n\n*倒數計時器以Asia/Taipei時區計算", inline=True)
+            await interaction.response.edit_message(embed = embed, view = view)
+        except:
+            embed=discord.Embed(color=0xee4f9e)
+            embed.add_field(name="ERROR!", value=langpack['err.message'], inline=True)
+            await interaction.response.edit_message(embed = embed)
+    gettime.gettime(8, '%Y/%m/%d %H:%M:%S')
+    with open('time.txt', 'r', encoding = 'utf-8') as f:
+        content1 = f.readlines()
+        zoned_time1 = content1[0]
+    time_1 = datetime.strptime(zoned_time1,"%Y/%m/%d %H:%M:%S")
+    time_2 = datetime.strptime('2023/05/20 00:00:00',"%Y/%m/%d %H:%M:%S")
+
+    time_interval = time_2 - time_1
+    
+    view = View(timeout = None)
+    button = Button(label = '更新', style = discord.ButtonStyle.green, emoji="🔃")
+    button.callback = refresh
+    view.add_item(button)
+
+    embed=discord.Embed(color=0xee4f9e)
+    embed.add_field(name="112年國中教育會考倒數", value=f"**{str(time_interval)}**\n``112年國中教育會考將在:112年5月20、21日舉辦``\n\n*倒數計時器以Asia/Taipei時區計算", inline=True)
+    await ctx.send(embed = embed, view = view)
 
 
 
@@ -3866,4 +4490,7 @@ async def view(ctx):
 
 
 
-bot.run(<token>)
+#更改機器人資訊、版本資訊
+#上面是測試機器人的，下面是團子機器人
+#bot.run(botsetting['token'][1])
+bot.run(botsetting['token'][0])
