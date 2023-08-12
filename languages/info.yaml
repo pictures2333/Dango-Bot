@@ -1,0 +1,13 @@
+botname: 愛吃團子的機器人
+bot: 機器人
+guilds: 伺服器數量
+users: 成員數量
+cpu: CPU
+cores: 核心數
+cpup: 占用率
+ram: 記憶體
+ping: 延遲
+ms: ms
+ver: "機器人版本 > "
+update: 更新
+des: "查看機器人資訊"

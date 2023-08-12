@@ -1,0 +1,9 @@
+name: "Game"
+des: "小遊戲"
+emoji: "🎮"
+value: game
+
+cmds:
+  ooxx:
+    name: /ooxx
+    des: "井字遊戲"

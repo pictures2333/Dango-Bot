@@ -1,0 +1,9 @@
+error: 執行命令時發生錯誤!
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+des: 重設伺服器設定檔
+mtitle: 伺服器設定檔重設完成
+m1: 伺服器名稱
+m2: 伺服器ID
+confirmword: iamsureaboutthat
+confirmvar: 輸入"iamsureaboutthat"確認執行重置
+nconfirm: 動作已取消

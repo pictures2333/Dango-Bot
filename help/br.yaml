@@ -1,0 +1,13 @@
+name: "Button Roles"
+des: "按下按鈕，獲取身分組"
+emoji: "🔘"
+value: br
+
+cmds:
+  br:
+    name: /br <msg> <role>
+    des: "建立一條帶有按鈕的訊息，按下按鈕可以獲得指定的身分組
+
+``<msg>`` - 訊息的內容
+
+``<role>`` - 按下按鈕可以得到的身分組"

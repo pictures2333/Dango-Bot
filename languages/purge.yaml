@@ -1,0 +1,7 @@
+error: 執行命令時發生錯誤!
+zero: 指定要清除的訊息數量必須大於零
+done: 訊息清理成功!
+done2: 條訊息被清除
+des: "大量清除訊息"
+numvar: "刪除訊息的數量"
+lackperm: "您並未擁有權限: ``管理者Administrator``"

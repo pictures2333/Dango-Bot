@@ -1,0 +1,42 @@
+p1:
+  title: 暫存語音頻道設定
+  naccess: 無法存取
+  notvc: "目前沒有暫存語音頻道:("
+  tvclist: 暫存語音頻道列表
+  add: 添加
+  del: 移除
+
+tvchadd:
+  cmddes: "添加暫存語音頻道"
+  chvar: "要設定為動態語音頻道的語音頻道"
+  add: 添加完成!
+  addchn: "頻道名稱:"
+  addchn2: "頻道id:"
+  error: 執行命令時發生錯誤!
+  error-simple: 錯誤!
+  already: 本頻道已經被設定為暫存語音頻道!
+  over: 此伺服器暫存語音頻道已超過上限(%LIMIT%個)!
+
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+
+tvcmain:
+  cmddes: "暫存語音頻道設定"
+  tvcadd: "請使用``/tvchadd <語音頻道>``添加暫存語音頻道"
+  del: 刪除成功!
+  del-1: "頻道id: "
+  error: 錯誤!
+  notbe: 此頻道並沒有被設置為暫存語音頻道
+  del-title: 刪除暫存語音頻道
+  del-des: 請在下方選單中選取一個暫存語音頻道，將其刪除。
+  del-footer: "注意: 暫存語音頻道的上限為"
+  cant-access: 無法存取的頻道
+  cant-access-emoji: 🔇
+  access-des: "ID: "
+  access-emoji: 🔊
+  nochoice: "沒有可以選擇的語音頻道:("
+  nocho-1: "就沒有東西可以選:("
+  nocho-2: NoThing
+  selectone: 請選擇一個語音頻道
+  back: 返回
+
+chame: "'s private channel(DGB)"

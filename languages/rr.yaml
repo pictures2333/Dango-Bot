@@ -1,0 +1,107 @@
+err: 執行命令時發生錯誤!
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+line: " | "
+
+rrnew:
+  des: 添加新的反應身分組(Reaction Roles)，請注意，必須在指定的訊息的頻道執行此指令
+  msgvar: 要添加反應身分組的訊息的ID
+  emojivar: 反應(Reaction)使用的表情符號(Emoji)
+  rolevar: 按下反應(Reaction)之後獲得的身分組
+
+  done: 反應身分組添加完成!
+  mid: 訊息ID
+  memo: Emoji
+  mrole: 身分組
+
+rrdel:
+  des: 刪除伺服器反應身分組(Reaction Roles)
+  msgvar: 要添加反應身分組的訊息的ID
+  emovar: 反應(Reaction)使用的表情符號(Emoji)
+
+  nbs: 指定的訊息與Reaction並沒有被設定reaction roles
+  err: 錯誤!
+  done: 反應身分組刪除完成
+  mid: "訊息ID: "
+  memo: "Emoji: "
+
+rrlist:
+  des: 查看伺服器反應身分組(Reaction Roles)列表
+  naccess: (無法存取)
+  mid: "- 訊息ID: "
+  memo: "Emoji: "
+  mrole: "身分組: "
+  norr: "(沒有任何反應身分組)"
+  listitle: 反應身分組列表
+
+rrbladduser:
+  des: 將用戶加入指定的反應身分組的黑名單內
+  msgvar: 指定反應身分組的訊息ID
+  emovar: 指定反應身分組的表情符號
+  uservar: 指定要加入黑名單的用戶
+
+  nbs: 指定的訊息與Reaction並沒有被設定reaction roles!
+  err: 錯誤!
+  mtitle: 黑名單添加成功
+  mtype: "類型: 添加用戶"
+  mid: "訊息ID"
+  memo: Emoji
+  muser: 被添加進黑名單的用戶
+
+rrbladdrole:
+  des: 將身分組加入指定的反應身分組的黑名單內
+  msgvar: 指定反應身分組的訊息ID
+  emovar: 指定反應身分組的表情符號
+  rolevar: 指定要加入黑名單的身分組
+
+  nbs: 指定的訊息與Reaction並沒有被設定reaction roles!
+  err: 錯誤!
+  mtitle: 黑名單添加成功
+  mtype: "類型: 添加身分組"
+  mid: "訊息ID"
+  memo: Emoji
+  muser: 被添加進黑名單的身分組
+
+rrbldelrole:
+  des: 將身分組從指定的反應身分組的黑名單中移除
+  msgvar: 指定反應身分組的訊息ID
+  emovar: 指定反應身分組的表情符號
+  rolevar: 指定要從黑名單之中移除的身分組
+
+  nbs: 指定的訊息與Reaction並沒有被設定reaction roles!
+  err: 錯誤!
+  mtitle: 黑名單移除成功
+  mtype: "類型: 移除身分組"
+  mid: "訊息ID"
+  memo: Emoji
+  muser: 被從黑名單移除的身分組
+
+rrbldeluser:
+  des: 將用戶從指定的反應身分組的黑名單中移除
+  msgvar: 指定反應身分組的訊息ID
+  emovar: 指定反應身分組的表情符號
+  uservar: 指定要從黑名單之中移除的用戶
+
+  nbs: 指定的訊息與Reaction並沒有被設定reaction roles!
+  err: 錯誤!
+  mtitle: 黑名單移除成功
+  mtype: "類型: 移除用戶"
+  mid: "訊息ID"
+  memo: Emoji
+  muser: 被從黑名單移除的用戶
+
+rrblist:
+  des: 查看反應身分組黑名單列表
+  mtitle: 反應身分組黑名單
+
+  mna: (無法存取)
+  mnr: (查無結果)
+  mid: "- <訊息ID: "
+  memoji: "Emoji: "
+  
+  mtypeu: "> 用戶"
+  mtyper: "> 身分組"
+
+  minit: "在黑名單內"
+
+  mut: "用戶黑名單"
+  mrt: "身分組黑名單"

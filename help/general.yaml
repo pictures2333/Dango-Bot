@@ -1,0 +1,46 @@
+name: "General"
+des: "一般指令"
+emoji: "🤔"
+value: general
+
+cmds:
+  fbk:
+    name: /fbk
+    des: ""
+  funstick:
+    name: /funstick
+    des: "跟機器人玩耍"
+  hi:
+    name: /hi
+    des: "和機器人打招呼"
+  hug:
+    name: /hug
+    des: "非物理形式的線上擁抱機器人"
+  picgoogle:
+    name: /picgoogle <msg>
+    des: "依據特定的關鍵字在Google搜尋圖片，並返回隨機一條結果
+    
+``<msg>`` - 搜尋關鍵字"
+  info:
+    name: /info
+    des: "查看機器人狀態"
+  ping:
+    name: /ping
+    des: "查看機器人網路延遲"
+  time:
+    name: /time
+    des: "查看現在時間"
+  userinfo:
+    name: /userinfo <user>
+    des: "查詢指定用戶的資訊
+  
+``<user>`` - 指定一名用戶"
+  guildinfo:
+    name: /guildinfo
+    des: "查看伺服器資訊"
+  tztime:
+    name: /tztime <zone>
+    des: "查詢指定時區的時間
+
+``<zone>`` - 指定時區"
+  

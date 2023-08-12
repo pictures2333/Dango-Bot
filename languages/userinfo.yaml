@@ -1,0 +1,18 @@
+id: "ID > "
+createtime: 創建時間
+bot: 機器人
+des: "查看用戶的資訊"
+uservar: "請選擇一名用戶"
+gamebut: 遊戲資料
+
+game:
+  title: 遊戲資訊
+  des: "用戶 > "
+  total: "總場數 > "
+  wins: "勝場數 > "
+  winp: "勝率 > %WIN%%"
+  winpz: "勝率 > 0%"
+  lose: "敗場數 > "
+  tie: "平局數 > "
+  ooxxt: 井字遊戲 統計資料
+  not: 這名用戶沒有遊戲資料!

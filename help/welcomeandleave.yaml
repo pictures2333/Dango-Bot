@@ -1,0 +1,27 @@
+name: "Welcome and Leave"
+des: "歡迎訊息與離開訊息"
+emoji: "👋"
+value: welcomeandleave
+
+cmds:
+  welcome:
+    name: /welcome
+    des: 歡迎訊息/歡迎私人訊息/新人身分組的控制面板
+  welchannel:
+    name: /welchannel <channel>
+    des: "設定歡迎訊息顯示的頻道
+
+``<channel>`` - 指定一個文字頻道"
+  welrole:
+    name: /welrole <role>
+    des: "設定用戶加入伺服器時會獲得的身分組
+
+``<role>`` - 指定一個身分組"
+  leave:
+    name: /leave
+    des: 離開訊息的控制面板
+  lefchannel:
+    name: /lefchannel <channel>
+    des: "設定離開訊息顯示的頻道
+
+``<channel>`` - 指定一個文字頻道"

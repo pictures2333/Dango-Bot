@@ -1,0 +1,66 @@
+name: "Reaction Roles"
+des: "反應身分組"
+emoji: "🪪"
+value: rr
+
+cmds:
+  rrnew:
+    name: /rrnew <msg> <emoji> <role>
+    des: "新增反應身分組
+
+注意: 必須在指定的訊息的頻道執行此指令
+
+``<msg>`` - 指定一條訊息的ID
+
+``<emoji>`` - 指定一個表情符號，作為反應
+
+``<role>`` - 設定點擊反應後獲得的身分組"
+  rrdel:
+    name: /rrdel <msg> <emoji>
+    des: "移除反應身分組
+
+``<msg>`` - 指定反應身分組的訊息的ID
+
+``<emoji>`` - 指定欲刪除的反應身分組使用的表情符號"
+  rrlist:
+    name: /rrlist
+    des: "查看伺服器所有的反應身分組"
+  rrbladduser:
+    name: /rrbladduser <msg> <emoji> <user>
+    des: "將一名用戶加入指定的反應身分組的黑名單
+
+``<msg>`` - 指定的反應身分組的訊息ID
+
+``<emoji>`` - 指定的反應身分組的反應表情符號
+
+``<user>`` - 欲添加進黑名單的用戶"
+  rrbladdrole:
+    name: /rrbladdrole <msg> <emoji> <role>
+    des: "將一個身分組加入指定的反應身分組的黑名單
+
+``<msg>`` - 指定的反應身分組的訊息ID
+
+``<emoji>`` - 指定的反應身分組的反應表情符號
+
+``<role>`` - 欲添加進黑名單的身分組"
+  rrbldelrole:
+    name: /rrbldelrole <msg> <emoji> <role>
+    des: "將一個身分組從指定的反應身分組的黑名單中移除
+
+``<msg>`` - 指定的反應身分組的訊息ID
+
+``<emoji>`` - 指定的反應身分組的反應表情符號
+
+``<role>`` - 欲從黑名單中移除的身分組"
+  rrbldeluser:
+    name: /rrbldeluser <msg> <emoji> <user>
+    des: "將一名用戶從指定的反應身分組的黑名單中移除
+
+``<msg>`` - 指定的反應身分組的訊息ID
+
+``<emoji>`` - 指定的反應身分組的反應表情符號
+
+``<user>`` - 欲從黑名單中移除的用戶"
+  rrblist:
+    name: /rrblist
+    des: "查看伺服器內所有反應身分組的黑名單"

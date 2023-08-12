@@ -1,0 +1,14 @@
+err: 執行命令時發生錯誤!
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+
+des: 生成帶有按鈕的訊息，按下按鈕時可以獲得指定的身分組
+msgvar: 設定訊息的內容
+rolevar: 設定按下按鈕之後獲得的身分組
+
+mtitle: Button Roles
+mget: 已獲得 %ROLE% 身分組
+mdel: 已移除 %ROLE% 身分組
+merr: 獲取身分組時發生錯誤!
+
+butget: "獲取身分組 "
+done: Button Roles生成完成!

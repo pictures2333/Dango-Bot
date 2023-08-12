@@ -1,0 +1,70 @@
+err: 執行命令時發生錯誤!
+errsimple: 錯誤!
+noch: 伺服器尚未添加任何頻道
+line: " | "
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+
+ytchadd:
+  des: 透過影片ID添加YT頻道
+  vidvar: 輸入欲添加頻道任一支影片的ID
+
+  done: 頻道添加成功
+  mname: "頻道名稱:"
+  mid: "頻道ID:"
+
+ytchdel:
+  des: 將YT頻道從列表中移除
+  chidvar: 輸入欲移除頻道ID
+
+  done: 已將頻道從列表中刪除
+  mdes: 已刪除頻道 
+  mdes-2: "頻道ID > "
+  mnoaccess: (無法存取)
+
+  nexist: "頻道列表中不存在指定的頻道(ID: ``%CHID%``)"
+
+ytchlist:
+  des: 伺服器內添加的所有YT頻道
+
+  mname: "- 頻道名稱: "
+  mid: "頻道ID: "
+  murl: "=> https://www.youtube.com/channel/"
+  mnoaccess: "- (無法存取)"
+  mtitle: YT頻道列表
+  
+chinfo:
+  des: 伺服器內添加的所有YT頻道
+  
+  murl: "=> https://www.youtube.com/channel/"
+  mnoaccess: "- (無法存取)"
+  mtitle: YT頻道列表
+
+newvideo:
+  des: 查看YT頻道的最新影片
+
+  mname: "頻道: "
+  marrow: " => "
+  murl: "- https://www.youtube.com/watch?v="
+  mchid: "頻道ID:"
+  mnaccess: " => 無法獲取!"
+
+  mtitle: "✨最新影片✨"
+
+subs:
+  des: 查詢伺服器添加的YT頻道的訂閱數
+
+  chname: "- 頻道: "
+  chsub: " 的訂閱數: "
+  chid: "- 頻道ID: "
+  chnaccess: " 訂閱數無法存取"
+
+  mtitle: 頻道訂閱數
+  footer: 透過Youtube Data API只能查詢到訂閱數的前三位
+
+subsearch:
+  des: 查詢指定頻道的訂閱數
+  vidvar: 輸入欲查詢頻道任一支影片的ID
+
+  chname: 頻道
+  chsub: 的訂閱數
+  footer: 透過Youtube Data API只能查詢到訂閱數的前三位

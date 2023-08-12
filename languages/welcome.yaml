@@ -1,0 +1,83 @@
+var-notice: "在歡迎訊息/離開訊息/歡迎私人訊息內放入變數可以讓訊息顯示出特定資訊
+
+
+``>gname<`` > 顯示伺服器名稱
+
+``>tagm<`` > 在訊息中tag加入/離開的成員
+
+``>mname<`` > 顯示成員帳號名稱
+
+
+> 注意: >tagm< 在離開訊息不能使用"
+
+back: 返回
+btvar: "說明: 變數"
+cmddes: 歡迎訊息設定
+
+welmsg:
+  setmsg-1: 編輯歡迎訊息
+  setmsg-2: 在此填入歡迎訊息
+  setmsg-3: 輸入一些文字(留空可清除歡迎訊息)...
+  welchannel: 請使用``/welchannel <文字頻道>``設定歡迎訊息的頻道
+  err-blank: "[!] 歡迎訊息為空白狀態"
+  err-channelns: "[!] 歡迎訊息頻道未設定"
+  err-channelnu: "[!] 設定的歡迎訊息頻道不存在"
+  toggle-c: 關閉
+  toggle-o: 開啟
+  msgns: (訊息未設定)
+  chna: (頻道無效)
+  chns: (頻道未設定)
+  mtitle: 歡迎訊息設定
+  mtoggle: 歡迎訊息
+  mcontent: 歡迎訊息內容
+  mchannel: 歡迎訊息頻道
+  btsta-o: "目前狀態: 開啟"
+  btsta-c: "目前狀態: 關閉"
+  btmsg: 訊息內容設定
+  btch: 訊息頻道設定
+
+weldm:
+  setmsg-1: "編輯歡迎私人訊息"
+  setmsg-2: "在此填入訊息"
+  setmsg-3: "輸入一些文字(留空可清除訊息)..."
+  err-blank: "[!] 歡迎私人訊息為空白狀態"
+  mtitle: 歡迎私人訊息設定
+  mtoggle: 歡迎私人訊息
+  mcontent: 訊息內容
+
+welrole:
+  welroleset: "請使用``/welrole <身分組>``設定新人身分組"
+  err-ns: "[!] 新人身分組尚未設定"
+  err-nu: "[!] 設定的身分組不存在"
+  rolenu: (身分組無效)
+  rolens: (身分組未設定)
+  mtitle: 新人身分組設定
+  mtoggle: 新人身分組
+  mrole: 設定的身分組
+
+main:
+  title: 歡迎/離開訊息設定
+  des: 點選以下按鈕進入不同項目的設定介面
+  btwelmsg: 歡迎訊息
+  btweldm: 歡迎私人訊息
+  btwelrole: 身分組
+
+error: 執行命令時發生錯誤!
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+
+welchannel:
+  cmddes: "設定歡迎訊息頻道"
+  channelvar: "歡迎訊息的文字頻道"
+  mtitle: "歡迎訊息頻道修改完成"
+  mname: "目前的歡迎訊息頻道"
+  mdes: "ID > "
+
+welrolecmd:
+  cmddes: "設定新人身分組"
+  rolevar: "伺服器的新成員獲得的身分組"
+  mtitle: "新人身分組修改完成"
+  mname: "目前的新人身分組"
+  mdes: "ID > "
+
+listener:
+  dmfrom: "來自: "

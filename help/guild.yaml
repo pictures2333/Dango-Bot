@@ -1,0 +1,14 @@
+name: "Guild"
+des: "伺服器指令"
+emoji: "⚒️"
+value: guild
+
+cmds:
+  purge:
+    name: /purge <num>
+    des: "大量清除訊息
+
+``<num>`` - 欲清除的訊息數量"
+  reset:
+    name: /reset
+    des: "重置伺服器設定檔"

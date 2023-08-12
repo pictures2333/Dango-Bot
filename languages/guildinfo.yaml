@@ -1,0 +1,10 @@
+error: 執行命令時發生錯誤!
+id: "ID > "
+member: 成員數量
+owner: 伺服器擁有者
+boost: 加成
+boost_level: 等級
+create: 創建時間
+channel: 頻道數量
+boosts: 個加成
+des: "查看伺服器的資訊"

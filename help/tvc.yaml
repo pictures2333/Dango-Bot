@@ -1,0 +1,14 @@
+name: "TVC"
+des: "暫存語音頻道"
+emoji: 🔊
+value: tvc
+
+cmds:
+  tvchadd:
+    name: /tvchadd <ch>
+    des: "將指定的語音頻道做為暫存語音頻道的入口
+    
+``<ch>`` - 指定一個語音頻道"
+  tvc:
+    name: /tvc
+    des: "暫存語音頻道的控制面板"

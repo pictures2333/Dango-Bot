@@ -1,0 +1,33 @@
+name: "Youtube"
+des: "Youtube相關功能"
+emoji: "▶️"
+value: yt
+
+cmds:
+  ytchadd:
+    name: /ytchadd <vid>
+    des: "添加YT頻道
+
+``<vid>`` - 輸入欲添加的YT頻道的任一支影片的ID"
+  ytchdel:
+    name: /ytchdel <chid>
+    des: "將一個YT頻道從伺服器YT頻道列表中移除
+
+``<chid>`` - 輸入欲移除的YT頻道的ID"
+  ytchlist:
+    name: /ytchlist
+    des: 查看伺服器YT頻道列表
+  chinfo:
+    name: /chinfo
+    des: 查看伺服器YT頻道列表
+  newvideo:
+    name: /newvideo
+    des: 查詢伺服器列表中所有YT頻道的最新影片
+  subs:
+    name: /subs
+    des: 查詢伺服器列表中所有YT頻道的訂閱數
+  subsearch:
+    name: /subsearch <vid>
+    des: "查詢指定的YT頻道的訂閱數
+
+``<vid>`` - 輸入欲查詢的YT頻道的任一支影片的ID"

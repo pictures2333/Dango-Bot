@@ -1,0 +1,38 @@
+cmddes: "離開訊息設定"
+
+msg:
+  title: 編輯離開訊息
+  name: 在此填入離開訊息
+  des: "輸入一些文字(留空可清除訊息)..."
+
+channel:
+  notice: 請使用``/lefchannel <文字頻道>``設定離開訊息的頻道
+
+main:
+  err-blank: "[!] 離開訊息為空白狀態"
+  err-chns: "[!] 離開訊息頻道未設定"
+  err-chnu: "[!] 設定的離開訊息頻道不存在"
+  toggle-o: 開啟
+  toggle-c: 關閉
+  msgns: (訊息未設定)
+  chnu: (頻道無效)
+  chns: (頻道未設定)
+  mtitle: 離開訊息設定
+  mtoggle: 離開訊息
+  mcontent: 離開訊息內容
+  mchannel: 離開訊息頻道
+  bto: "目前狀態: 開啟"
+  btc: "目前狀態: 關閉"
+  btmsg: 訊息內容設定
+  btch: 訊息頻道設定
+  btvar: "說明: 變數"
+
+err: "執行命令時發生錯誤!"
+lackperm: "您並未擁有權限: ``管理者Administrator``"
+
+lefch:
+  cmddes: 設定離開訊息頻道
+  channelvar: 離開訊息的文字頻道
+  title: "離開訊息頻道修改完成"
+  name: "目前的離開訊息頻道"
+  des: "ID > "
