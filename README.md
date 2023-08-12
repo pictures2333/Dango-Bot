@@ -1,5 +1,7 @@
 # 愛吃團子的機器人
 
+![](https://images-ext-1.discordapp.net/external/TadDKN1eibH8W1-bQtlXTqfHfIokSjuytT9yG8kIT8g/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/891282885007532062/42b057e42c74be1ca1869bcea923a725.png?width=468&height=468)
+
 歡迎來到**愛吃團子的機器人**Github頁面
 
 這是一個使用Discord.py開發，功能又多又奇怪的機器人
